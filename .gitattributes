@@ -11,6 +11,7 @@
 *.asset filter=lfs diff=lfs merge=lfs -text
 *.meta merge=unityyamlmerge eol=lf
 *.controller merge=unityyamlmerge eol=lf
+*.vsconfig text
 ## git-lfs ##
 #Image
 *.jpg filter=lfs diff=lfs merge=lfs -text
