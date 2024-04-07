@@ -11,6 +11,7 @@ public class CarController : MonoBehaviour
     {
     }
 
+   
     // Update is called once per frame
     void Update()
     {
@@ -39,12 +40,12 @@ public class CarController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            gameObject.transform.Rotate(Vector3.forward * 0.5f);
+            gameObject.transform.Rotate(Vector3.forward * 100.0f * Time.deltaTime);
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            gameObject.transform.Rotate(Vector3.back * 0.5f);
+            gameObject.transform.Rotate(Vector3.back * 100.0f * Time.deltaTime);
         }
 
         if (Input.GetKeyDown(KeyCode.Q))

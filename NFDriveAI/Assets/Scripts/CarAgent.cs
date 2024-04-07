@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class CarAgent : MonoBehaviour
 {
-    private float[,] qtable = new float[20,5];
+    private float[,] qtable = new float[60,5];
     private float learningRate = 0.5f;
     private float discountFactor = 0.9f;
     private float explorationStart = 0.1f;
     private float explorationEnd = 0.01f;
-    private int finishLineReward = 100;
+    private int finishLineReward = 1000;
     private int goodDrivingReward = 1;
     private int badDrivingPenalty = -1;
-    private int wallPenalty = -100;
+    private int wallPenalty = -1000;
     private float decayRate = 0.05f;
 
     // Start is called before the first frame update
@@ -82,6 +82,6 @@ public class CarAgent : MonoBehaviour
 
     public void FinishEpisode(int currentEpisode, bool train = true)
     {
-        int currentState = 0;
+        int currentState = 0; 
     }
 }
