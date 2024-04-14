@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CapsuleCasting : MonoBehaviour
@@ -10,8 +11,9 @@ public class CapsuleCasting : MonoBehaviour
     public float x = 0.93f;
     public float y = 0.7f;
     bool collided = false;
-    static float rightRayDistance;
-    static float leftRayDistance;
+    public float rightRayDistance;
+    public float leftRayDistance;
+    public TMP_Text rightText, leftText;
 
     private void Start()
     {
@@ -33,7 +35,10 @@ public class CapsuleCasting : MonoBehaviour
         // Raggi laterali (sull'asse y)
         //DrawRay(topEnd, transform.TransformDirection(Vector2.left));
         //DrawRay(bottomEnd, transform.TransformDirection(Vector2.right));
-        
+
+        rightText.text = rightRayDistance.ToString();
+        leftText.text = leftRayDistance.ToString();
+
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -60,11 +65,14 @@ public class CapsuleCasting : MonoBehaviour
         if (hit.collider != null)
         {
             Debug.DrawLine(start, hit.point, Color.red);
-            if (collided)
+            if (isRightRay)
             {
-                print($"{hit.distance}");
+                rightRayDistance = hit.distance;
             }
-
+            else
+            {
+                leftRayDistance = hit.distance;
+            }
             if (Input.GetKeyDown(KeyCode.B))
             {
                 print(hit.distance);
@@ -74,6 +82,14 @@ public class CapsuleCasting : MonoBehaviour
         else
         {
             Debug.DrawRay(start, direction * maxRaycastDistance, Color.green);
+            if (isRightRay)
+            {
+                rightRayDistance = float.NaN;
+            }
+            else
+            {
+                leftRayDistance = float.NaN;
+            }
         }
         
     }

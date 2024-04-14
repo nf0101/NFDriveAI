@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -15,17 +16,27 @@ public class CarAgent : MonoBehaviour
     private int badDrivingPenalty = -1;
     private int wallPenalty = -1000;
     private float decayRate = 0.05f;
+    private CapsuleCasting raycastScript;
+    private CarController carControllerScript;
+    private float[] features = new float[3];
 
     // Start is called before the first frame update
     void Start()
     {
-        print(GetExplorationRate(1));
+        //rint(GetExplorationRate(1));
+        raycastScript = gameObject.GetComponent<CapsuleCasting>();
+        carControllerScript = gameObject.GetComponent<CarController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        features[0] = raycastScript.rightRayDistance;
+        features[1] = raycastScript.leftRayDistance;
+        features[2] = carControllerScript.carSpeed;
+        string concatenated = string.Join(",", features.Select(x => x.ToString()).ToArray());
+        print(concatenated);
+        //previsione stato con coordinate hit.point
     }
 
     float GetExplorationRate(int currentEpisode)
