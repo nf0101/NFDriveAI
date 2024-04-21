@@ -38,14 +38,14 @@ public class CarController : MonoBehaviour
             gameObject.transform.Translate(Vector3.up * Time.deltaTime * carSpeed);
         }
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            gameObject.transform.Rotate(Vector3.forward * 100.0f * Time.deltaTime);
+            gameObject.transform.Rotate(Vector3.forward * 1.5f);
         }
 
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.D))
         {
-            gameObject.transform.Rotate(Vector3.back * 100.0f * Time.deltaTime);
+            gameObject.transform.Rotate(Vector3.back * 1.5f);
         }
 
         if (Input.GetKeyDown(KeyCode.Q))

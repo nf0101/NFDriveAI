@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class CapsuleCasting : MonoBehaviour
@@ -13,7 +15,8 @@ public class CapsuleCasting : MonoBehaviour
     bool collided = false;
     public float rightRayDistance;
     public float leftRayDistance;
-    public TMP_Text rightText, leftText;
+    public TMP_Text rightText, leftText, test, prev;
+    public float prevDis;
 
     private void Start()
     {
@@ -27,10 +30,12 @@ public class CapsuleCasting : MonoBehaviour
         Vector2 leftEnd2 = transform.TransformPoint(new Vector2(-capsuleWidth / y, x));
         Vector2 topEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
         Vector2 bottomEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
-
+        Vector2 nextStart = Quaternion.Euler(Vector2.down * 1.5f) * leftEnd1; //correggere punto start
         // Raggi frontali (sull'asse x)
-        DrawRay(leftEnd1, transform.TransformDirection(Vector2.up), true);
-        DrawRay(leftEnd2, transform.TransformDirection(Vector2.up), false);
+        DrawRay(leftEnd1, transform.TransformDirection(Vector2.up), new bool[] {true, true}); //il primo bool indica raycast reale (true) o di previsione (false), il secondo indica destra (true) o sinistra (false)
+        DrawRay(leftEnd2, transform.TransformDirection(Vector2.up), new bool[] {true, false});
+        DrawRay(nextStart, Quaternion.Euler(0, 0, -1.5f) * transform.TransformDirection(Vector2.up), new bool[] {false, true});
+
 
         // Raggi laterali (sull'asse y)
         //DrawRay(topEnd, transform.TransformDirection(Vector2.left));
@@ -38,9 +43,10 @@ public class CapsuleCasting : MonoBehaviour
 
         rightText.text = rightRayDistance.ToString();
         leftText.text = leftRayDistance.ToString();
+        prev.text = prevDis.ToString();
 
     }
-
+    //coordinate punto di inizio - distanza attuale - distanza successiva
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.tag.Equals("Finish"))
@@ -58,37 +64,63 @@ public class CapsuleCasting : MonoBehaviour
         }
     }
 
-    void DrawRay(Vector2 start, Vector2 direction, bool isRightRay)
+    void DrawRay(Vector2 start, Vector2 direction, bool[] specs)
     {
         RaycastHit2D hit = Physics2D.Raycast(start, direction, maxRaycastDistance);
-
+        
         if (hit.collider != null)
         {
+            //if (specs[0])
+            //{
+            //   // test.text = Vector2.Angle(gameObject.transform.position, hit.point).ToString();
+            //}
+            
             Debug.DrawLine(start, hit.point, Color.red);
-            if (isRightRay)
+            if (specs[0])
             {
-                rightRayDistance = hit.distance;
+                if (specs[1])
+                {
+                    rightRayDistance = hit.distance;
+                   
+                }
+                else
+                {
+                    leftRayDistance = hit.distance;
+                }
+
+                if (Input.GetKeyDown(KeyCode.B))
+                {
+                    print(hit.distance);
+                }
             }
             else
             {
-                leftRayDistance = hit.distance;
+                if (specs[1])
+                {
+                    prevDis = hit.distance;
+                }
             }
-            if (Input.GetKeyDown(KeyCode.B))
-            {
-                print(hit.distance);
-            }
-            //print(hit.collider.name);
+            //test.text = Vector2.Distance(Quaternion.Euler(Vector2.down * 0.5f) * start, hit.point).ToString();
         }
+
         else
         {
             Debug.DrawRay(start, direction * maxRaycastDistance, Color.green);
-            if (isRightRay)
+            if (specs[0])
             {
-                rightRayDistance = float.NaN;
+                if (specs[1])
+                {
+                    rightRayDistance = float.NaN;
+                }
+                else
+                {
+                    leftRayDistance = float.NaN;
+                }
+                
             }
             else
             {
-                leftRayDistance = float.NaN;
+               
             }
         }
         

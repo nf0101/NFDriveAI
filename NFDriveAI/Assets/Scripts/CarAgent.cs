@@ -34,8 +34,8 @@ public class CarAgent : MonoBehaviour
         features[0] = raycastScript.rightRayDistance;
         features[1] = raycastScript.leftRayDistance;
         features[2] = carControllerScript.carSpeed;
-        string concatenated = string.Join(",", features.Select(x => x.ToString()).ToArray());
-        print(concatenated);
+       // string concatenated = string.Join(",", features.Select(x => x.ToString()).ToArray());
+        //print(concatenated);
         //previsione stato con coordinate hit.point
     }
 
