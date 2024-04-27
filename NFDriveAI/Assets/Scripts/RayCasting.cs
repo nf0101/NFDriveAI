@@ -15,8 +15,8 @@ public class CapsuleCasting : MonoBehaviour
     bool collided = false;
     public float rightRayDistance;
     public float leftRayDistance;
-    public TMP_Text rightText, leftText, test, prev;
-    public float prevDis;
+    public TMP_Text rightText, leftText, prevRight_Right, prevRight_Left, prevLeft_Right, prevLeft_Left;
+    public float prevRight_R, prevRight_L, prevLeft_R, prevLeft_L;
 
     private void Start()
     {
@@ -28,57 +28,77 @@ public class CapsuleCasting : MonoBehaviour
         // Calcola le posizioni degli estremi della capsula in base alla rotazione
         Vector2 leftEnd1 = transform.TransformPoint(new Vector2(capsuleWidth / y, x));
         Vector2 leftEnd2 = transform.TransformPoint(new Vector2(-capsuleWidth / y, x));
-        Vector2 topEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
-        Vector2 bottomEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
-        Vector2 nextStart = Quaternion.Euler(Vector2.down * 1.5f) * leftEnd1; //correggere punto start
-        // Raggi frontali (sull'asse x)
-        DrawRay(leftEnd1, transform.TransformDirection(Vector2.up), new bool[] {true, true}); //il primo bool indica raycast reale (true) o di previsione (false), il secondo indica destra (true) o sinistra (false)
-        DrawRay(leftEnd2, transform.TransformDirection(Vector2.up), new bool[] {true, false});
-        DrawRay(nextStart, Quaternion.Euler(0, 0, -1.5f) * transform.TransformDirection(Vector2.up), new bool[] {false, true});
+        //Vector2 topEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
+        //Vector2 bottomEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
 
+        Quaternion rightRotation = Quaternion.Euler(0, 0, -1.5f);
+        Quaternion leftRotation = Quaternion.Euler(0, 0, 1.5f);
+
+        Vector2 rightPrevisionR = (Vector2)(rightRotation * (leftEnd1 - (Vector2)transform.position)) + (Vector2)transform.position;
+        Vector2 rightPrevisionL = (Vector2)(leftRotation * (leftEnd1 - (Vector2)transform.position)) + (Vector2)transform.position;
+        Vector2 leftPrevisionR = (Vector2)(rightRotation * (leftEnd2 - (Vector2)transform.position)) + (Vector2)transform.position;
+        Vector2 leftPrevisionL = (Vector2)(leftRotation * (leftEnd2 - (Vector2)transform.position)) + (Vector2)transform.position;
+
+
+
+        // Raggi frontali (sull'asse x)
+        DrawRay(leftEnd1, transform.TransformDirection(Vector2.up), true, 1); //il primo bool indica raycast reale (true) o di previsione (false), il secondo indica destra (true) o sinistra (false)
+        DrawRay(leftEnd2, transform.TransformDirection(Vector2.up), false, 1);
+        DrawRay(rightPrevisionR, rightRotation * transform.TransformDirection(Vector2.up), true, 2);
+        DrawRay(rightPrevisionL, leftRotation * transform.TransformDirection(Vector2.up), true, 0);
+        DrawRay(leftPrevisionR, rightRotation * transform.TransformDirection(Vector2.up), false, 2);
+        DrawRay(leftPrevisionL, leftRotation * transform.TransformDirection(Vector2.up), false, 0);
 
         // Raggi laterali (sull'asse y)
         //DrawRay(topEnd, transform.TransformDirection(Vector2.left));
         //DrawRay(bottomEnd, transform.TransformDirection(Vector2.right));
 
-        rightText.text = rightRayDistance.ToString();
-        leftText.text = leftRayDistance.ToString();
-        prev.text = prevDis.ToString();
+        rightText.text = $"Dist dx: {rightRayDistance}";
+        leftText.text = $"Dist dx: {leftRayDistance}";
+        prevRight_Right.text = $"Prev dx: {prevRight_R}";
+        prevRight_Left.text = $"Prev sx: {prevRight_L}";
+        prevLeft_Right.text = $"Prev dx: {prevLeft_R}";
+        prevLeft_Left.text = $"Prev sx: {prevLeft_L}";
 
     }
     //coordinate punto di inizio - distanza attuale - distanza successiva
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.tag.Equals("Finish"))
+        if (collision.gameObject.tag.Equals("Bound"))
         {
             
             collided = true;
+            print($"D: {rightRayDistance}, {leftRayDistance}");
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.tag.Equals("Finish"))
+        if (collision.gameObject.tag.Equals("Bound"))
         {
             collided = false;
         }
     }
 
-    void DrawRay(Vector2 start, Vector2 direction, bool[] specs)
+    void DrawRay(Vector2 start, Vector2 direction, bool side, int rayPosition)
     {
         RaycastHit2D hit = Physics2D.Raycast(start, direction, maxRaycastDistance);
         
         if (hit.collider != null)
         {
-            //if (specs[0])
-            //{
-            //   // test.text = Vector2.Angle(gameObject.transform.position, hit.point).ToString();
-            //}
-            
-            Debug.DrawLine(start, hit.point, Color.red);
-            if (specs[0])
+            Color color;
+            if (rayPosition == 1)
             {
-                if (specs[1])
+                color = Color.red;
+            }
+            else
+            {
+                color = Color.blue;
+            }
+            Debug.DrawLine(start, hit.point, color);
+            if (rayPosition == 1)
+            {
+                if (side)
                 {
                     rightRayDistance = hit.distance;
                    
@@ -93,22 +113,39 @@ public class CapsuleCasting : MonoBehaviour
                     print(hit.distance);
                 }
             }
-            else
+
+            if (side)
             {
-                if (specs[1])
+                if (rayPosition == 0)
                 {
-                    prevDis = hit.distance;
+                    prevRight_L = hit.distance;
+                }
+
+                if (rayPosition == 2)
+                {
+                    prevRight_R = hit.distance;
                 }
             }
-            //test.text = Vector2.Distance(Quaternion.Euler(Vector2.down * 0.5f) * start, hit.point).ToString();
+            else
+            {
+                if (rayPosition == 0)
+                {
+                    prevLeft_L = hit.distance;
+                }
+
+                if (rayPosition == 2)
+                {
+                    prevLeft_R = hit.distance;
+                }
+            }
         }
 
         else
         {
             Debug.DrawRay(start, direction * maxRaycastDistance, Color.green);
-            if (specs[0])
+            if (rayPosition == 1)
             {
-                if (specs[1])
+                if (side)
                 {
                     rightRayDistance = float.NaN;
                 }
@@ -118,10 +155,32 @@ public class CapsuleCasting : MonoBehaviour
                 }
                 
             }
+
+            if (side)
+            {
+                if (rayPosition == 0)
+                {
+                    prevRight_L = float.NaN;
+                }
+
+                if (rayPosition == 2)
+                {
+                    prevRight_R = float.NaN;
+                }
+            }
             else
             {
-               
+                if (rayPosition == 0)
+                {
+                    prevLeft_L = float.NaN;
+                }
+
+                if (rayPosition == 2)
+                {
+                    prevLeft_R = float.NaN;
+                }
             }
+
         }
         
     }

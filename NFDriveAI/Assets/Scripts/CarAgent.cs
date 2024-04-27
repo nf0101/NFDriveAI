@@ -18,6 +18,7 @@ public class CarAgent : MonoBehaviour
     private float decayRate = 0.05f;
     private CapsuleCasting raycastScript;
     private CarController carControllerScript;
+    private float[] raycastDistances = new float[6];
     private float[] features = new float[3];
 
     // Start is called before the first frame update
@@ -31,11 +32,19 @@ public class CarAgent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        raycastDistances[0] = raycastScript.rightRayDistance;
+        raycastDistances[1] = raycastScript.prevRight_R;
+        raycastDistances[2] = raycastScript.prevRight_L;
+        raycastDistances[3] = raycastScript.leftRayDistance;
+        raycastDistances[4] = raycastScript.prevLeft_R;
+        raycastDistances[5] = raycastScript.prevLeft_L;
         features[0] = raycastScript.rightRayDistance;
         features[1] = raycastScript.leftRayDistance;
         features[2] = carControllerScript.carSpeed;
-       // string concatenated = string.Join(",", features.Select(x => x.ToString()).ToArray());
-        //print(concatenated);
+
+
+        string concatenated = string.Join(";", raycastDistances.Select(x => ((float)System.Math.Ceiling(x * 20) / 20).ToString()).ToArray());
+        print(concatenated);
         //previsione stato con coordinate hit.point
     }
 
@@ -82,7 +91,11 @@ public class CarAgent : MonoBehaviour
 
         return maxQValue;
     }
-
+    /*
+     * getStato deve restituire lo stato corrente discretizzato, che equivale all'indicizzazione della distanza dei due raggi
+     * Ipotesi: dividere ogni raggio in 15 stati da 0.05 ognuno. La distanza reale sarà approssimata allo stato discreto più vicino
+     * 
+     */
     public void UpdateQTable(int state, int action, float reward, int nextState)
     {
         float maxNextQValue = GetMaxQValue(nextState);
