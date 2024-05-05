@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,9 +34,9 @@ public class CarAgent : MonoBehaviour
     void Update()
     {
         raycastDistances[0] = raycastScript.rightRayDistance;
-        raycastDistances[1] = raycastScript.prevRight_R;
-        raycastDistances[2] = raycastScript.prevRight_L;
-        raycastDistances[3] = raycastScript.leftRayDistance;
+        raycastDistances[1] = raycastScript.leftRayDistance;
+        raycastDistances[2] = raycastScript.prevRight_R;
+        raycastDistances[3] = raycastScript.prevRight_L;
         raycastDistances[4] = raycastScript.prevLeft_R;
         raycastDistances[5] = raycastScript.prevLeft_L;
         features[0] = raycastScript.rightRayDistance;
@@ -43,9 +44,20 @@ public class CarAgent : MonoBehaviour
         features[2] = carControllerScript.carSpeed;
 
 
-        string concatenated = string.Join(";", raycastDistances.Select(x => ((float)System.Math.Ceiling(x * 20) / 20).ToString()).ToArray());
-        print(concatenated);
-        //previsione stato con coordinate hit.point
+        string concatenated = string.Join(";", raycastDistances.Select(x => (DiscretizeDistance(x)).ToString()).ToArray());
+        print(GetStateIndex(DiscretizeDistance(raycastDistances[0])));
+        //GetStateIndex(DiscretizeDistance(raycastDistances[0]));
+    }
+
+    int GetStateIndex(float state)
+    {
+        print(state);
+        return (int)(state / 0.05);
+    }
+
+    float DiscretizeDistance(float distance)
+    {
+        return (float)(Math.Round(distance * 20, MidpointRounding.AwayFromZero) / 20);
     }
 
     float GetExplorationRate(int currentEpisode)
@@ -60,9 +72,9 @@ public class CarAgent : MonoBehaviour
         float maxQValue = float.MinValue;
         int bestAction = 0;
 
-        if (Random.Range(0.1f, 1.1f) > explorationRate)
+        if (UnityEngine.Random.Range(0.1f, 1.1f) > explorationRate)
         {
-            return Random.Range(0, 6);
+            return UnityEngine.Random.Range(0, 3);
         }
         else
         {
@@ -91,11 +103,7 @@ public class CarAgent : MonoBehaviour
 
         return maxQValue;
     }
-    /*
-     * getStato deve restituire lo stato corrente discretizzato, che equivale all'indicizzazione della distanza dei due raggi
-     * Ipotesi: dividere ogni raggio in 15 stati da 0.05 ognuno. La distanza reale sarà approssimata allo stato discreto più vicino
-     * 
-     */
+
     public void UpdateQTable(int state, int action, float reward, int nextState)
     {
         float maxNextQValue = GetMaxQValue(nextState);
@@ -106,6 +114,14 @@ public class CarAgent : MonoBehaviour
 
     public void FinishEpisode(int currentEpisode, bool train = true)
     {
-        int currentState = 0; 
+        int currentState = GetStateIndex(DiscretizeDistance(raycastDistances[0]));
+        bool isDone = false;
+        int episodeReward = 0;
+        int episodeStep = 0;
+
+        while (!isDone)
+        {
+            int action = GetAction(currentState, currentEpisode);
+        }
     }
 }

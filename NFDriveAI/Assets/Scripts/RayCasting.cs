@@ -54,11 +54,11 @@ public class CapsuleCasting : MonoBehaviour
         //DrawRay(bottomEnd, transform.TransformDirection(Vector2.right));
 
         rightText.text = $"Dist dx: {rightRayDistance}";
-        leftText.text = $"Dist dx: {leftRayDistance}";
-        prevRight_Right.text = $"Prev dx: {prevRight_R}";
-        prevRight_Left.text = $"Prev sx: {prevRight_L}";
-        prevLeft_Right.text = $"Prev dx: {prevLeft_R}";
-        prevLeft_Left.text = $"Prev sx: {prevLeft_L}";
+        leftText.text = $"Dist sx: {leftRayDistance}";
+        prevRight_Right.text = $"Prev dxdx: {prevRight_R}";
+        prevRight_Left.text = $"Prev dxsx: {prevRight_L}";
+        prevLeft_Right.text = $"Prev sxdx: {prevLeft_R}";
+        prevLeft_Left.text = $"Prev sxdx: {prevLeft_L}";
 
     }
     //coordinate punto di inizio - distanza attuale - distanza successiva
