@@ -17,6 +17,7 @@ public class CapsuleCasting : MonoBehaviour
     public float leftRayDistance;
     public TMP_Text rightText, leftText, prevRight_Right, prevRight_Left, prevLeft_Right, prevLeft_Left;
     public float prevRight_R, prevRight_L, prevLeft_R, prevLeft_L;
+    float rotation = 2f;
 
     private void Start()
     {
@@ -31,8 +32,8 @@ public class CapsuleCasting : MonoBehaviour
         //Vector2 topEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
         //Vector2 bottomEnd = transform.TransformPoint(new Vector2(0f, capsuleHeight / 2f));
 
-        Quaternion rightRotation = Quaternion.Euler(0, 0, -1.5f);
-        Quaternion leftRotation = Quaternion.Euler(0, 0, 1.5f);
+        Quaternion rightRotation = Quaternion.Euler(0, 0, -rotation);
+        Quaternion leftRotation = Quaternion.Euler(0, 0, rotation);
 
         Vector2 rightPrevisionR = (Vector2)(rightRotation * (leftEnd1 - (Vector2)transform.position)) + (Vector2)transform.position;
         Vector2 rightPrevisionL = (Vector2)(leftRotation * (leftEnd1 - (Vector2)transform.position)) + (Vector2)transform.position;
@@ -68,7 +69,7 @@ public class CapsuleCasting : MonoBehaviour
         {
             
             collided = true;
-            print($"D: {rightRayDistance}, {leftRayDistance}");
+            //print($"D: {rightRayDistance}, {leftRayDistance}");
         }
     }
 

@@ -11,7 +11,21 @@ public class CarController : MonoBehaviour
     {
     }
 
-   
+    public void SteerRight()
+    {
+        gameObject.transform.Rotate(Vector3.back * 2f);
+    }
+
+    public void SteerLeft()
+    {
+        gameObject.transform.Rotate(Vector3.forward * 2f);
+    }
+
+    public void Drive()
+    {
+        gameObject.transform.Translate(Vector3.up * Time.deltaTime * carSpeed);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -40,12 +54,12 @@ public class CarController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            gameObject.transform.Rotate(Vector3.forward * 1.5f);
+            gameObject.transform.Rotate(Vector3.forward * 1f);
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            gameObject.transform.Rotate(Vector3.back * 1.5f);
+            gameObject.transform.Rotate(Vector3.back * 1f);
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
