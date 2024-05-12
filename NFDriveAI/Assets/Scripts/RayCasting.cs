@@ -10,13 +10,13 @@ public class CapsuleCasting : MonoBehaviour
 {
     public float capsuleWidth = 0.2f;  // Larghezza della capsula
     public float capsuleHeight = 0.25f;  // Altezza della capsula
-    public float maxRaycastDistance = 1.5f, latDistance = 0.25f;  // Lunghezza massima del raycast
+    public float maxRaycastDistance = 0.75f, latDistance = 0.25f;  // Lunghezza massima del raycast
     public float x = 0.93f;
     public float y = 0.7f;
     bool collided = false;
     public float rightRayDistance, leftRayDistance, rightLatDistance, leftLatDistance;
-    public TMP_Text rightText, leftText, prevRight_Right, prevRight_Left, prevLeft_Right, prevLeft_Left;
-    public float prevRight_R, prevRight_L, prevLeft_R, prevLeft_L;
+    public TMP_Text rightText, leftText, prevRight_Right, prevRight_Left, prevLeft_Right, prevLeft_Left, rightLatText, leftLatText, prevRightLat_Right, prevRightLat_Left, prevLeftLat_Right, prevLeftLat_Left;
+    public float prevRight_R, prevRight_L, prevLeft_R, prevLeft_L, prevLatLeft_R, prevLatLeft_L, prevLatRight_R, prevLatRight_L;
     float rotation = 2f;
 
     private void Start()
@@ -58,21 +58,30 @@ public class CapsuleCasting : MonoBehaviour
         DrawRay(leftPrevisionR, rightRotation * transform.TransformDirection(Vector2.up), false, 2, maxRaycastDistance);
         DrawRay(leftPrevisionL, leftRotation * transform.TransformDirection(Vector2.up), false, 0, maxRaycastDistance); 
         
-        DrawRay(rightEnd, transform.TransformDirection(Vector2.right), true, 3, latDistance);
-        DrawRay(leftDown, transform.TransformDirection(Vector2.left), false, 3, latDistance);
+        DrawRay(rightEnd, transform.TransformDirection(Vector2.right), true, 4, latDistance);
+        DrawRay(leftDown, transform.TransformDirection(Vector2.left), false, 4, latDistance);
 
-        DrawRay(rightLatPrevisionR, rightRotation * transform.TransformDirection(Vector2.right), true, 4, latDistance);
-        DrawRay(rightLatPrevisionL, leftRotation * transform.TransformDirection(Vector2.right), true, 4, latDistance);
+        DrawRay(rightLatPrevisionR, rightRotation * transform.TransformDirection(Vector2.right), true, 5, latDistance);
+        DrawRay(rightLatPrevisionL, leftRotation * transform.TransformDirection(Vector2.right), true, 3, latDistance);
 
-        DrawRay(leftLatPrevisionL, leftRotation * transform.TransformDirection(Vector2.left), false, 4, latDistance);
-        DrawRay(leftLatPrevisionR, rightRotation * transform.TransformDirection(Vector2.left), false, 4, latDistance);
+        DrawRay(leftLatPrevisionL, leftRotation * transform.TransformDirection(Vector2.left), false, 3, latDistance);
+        DrawRay(leftLatPrevisionR, rightRotation * transform.TransformDirection(Vector2.left), false, 5, latDistance);
 
         rightText.text = $"Dist dx: {rightRayDistance}";
         leftText.text = $"Dist sx: {leftRayDistance}";
+
+        rightLatText.text = $"Dist lat dx: {rightLatDistance}";
+        leftLatText.text = $"Dist lat sx: {leftLatDistance}";
+
         prevRight_Right.text = $"Prev dxdx: {prevRight_R}";
         prevRight_Left.text = $"Prev dxsx: {prevRight_L}";
         prevLeft_Right.text = $"Prev sxdx: {prevLeft_R}";
         prevLeft_Left.text = $"Prev sxdx: {prevLeft_L}";
+
+        prevRightLat_Right.text = $"Prev lat dxdx: {prevLatRight_R}";
+        prevRightLat_Left.text = $"Prev lat dxsx: {prevLatRight_L}";
+        prevLeftLat_Right.text = $"Prev lat sxdx: {prevLatLeft_R}";
+        prevLeftLat_Left.text = $"Prev lat sxsx: {prevLatLeft_L}";
 
     }
     //coordinate punto di inizio - distanza attuale - distanza successiva
@@ -101,7 +110,7 @@ public class CapsuleCasting : MonoBehaviour
         if (hit.collider != null)
         {
             Color color;
-            if (rayPosition == 1 || rayPosition == 3)
+            if (rayPosition == 1 || rayPosition == 4)
             {
                 color = Color.red;
             }
@@ -142,8 +151,17 @@ public class CapsuleCasting : MonoBehaviour
 
                 if (rayPosition == 3)
                 {
-                    rightLatDistance = hit.distance;
-                    print(hit.distance);
+                    prevLatRight_L = hit.distance;
+                }
+
+                if (rayPosition == 4)
+                {
+                    rightLatDistance = hit.distance; 
+                }
+
+                if (rayPosition == 5)
+                {
+                    prevLatRight_R = hit.distance;
                 }
             }
             else
@@ -160,7 +178,17 @@ public class CapsuleCasting : MonoBehaviour
 
                 if (rayPosition == 3)
                 {
+                    prevLatLeft_L = hit.distance;
+                }
+
+                if (rayPosition == 4)
+                {
                     leftLatDistance = hit.distance;
+                }
+                    
+                if (rayPosition == 5)
+                {
+                    prevLatLeft_R = hit.distance;
                 }
             }
         }
@@ -168,7 +196,7 @@ public class CapsuleCasting : MonoBehaviour
         else
         {
             Debug.DrawRay(start, direction * rayLength, Color.green);
-            if (rayPosition == 1 || rayPosition == 3)
+            if (rayPosition == 1)
             {
                 if (side)
                 {
@@ -177,8 +205,20 @@ public class CapsuleCasting : MonoBehaviour
                 else
                 {
                     leftRayDistance = float.NaN;
+                } 
+            }
+
+            if (rayPosition == 4)
+            {
+                if (side)
+                {
+                    rightLatDistance = float.NaN;
                 }
-                
+                else
+                {
+                    leftLatDistance = float.NaN;
+                }
+
             }
 
             if (side)
@@ -206,6 +246,29 @@ public class CapsuleCasting : MonoBehaviour
                 }
             }
 
+            if (rayPosition == 3)
+            {
+                if (side)
+                {
+                    prevLatRight_L = float.NaN;
+                }
+                else
+                {
+                    prevLatLeft_L = float.NaN;
+                }
+            }
+
+            if (rayPosition == 5)
+            {
+                if (side)
+                {
+                    prevLatRight_R = float.NaN;
+                }
+                else
+                {
+                    prevLatLeft_R = float.NaN;
+                }
+            }
         }
         
     }

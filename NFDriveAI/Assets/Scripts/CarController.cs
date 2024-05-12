@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 public class CarController : MonoBehaviour  
 {
-    public float carSpeed = 1;
+    public float carSpeed = 0.5f;
     public TMP_Text text;
     // Start is called before the first frame update
     void Start()
@@ -34,7 +34,7 @@ public class CarController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                carSpeed += 0.5f;
+                carSpeed += 0.25f;
             }
         }
 
@@ -42,7 +42,7 @@ public class CarController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                carSpeed -= 0.5f;
+                carSpeed -= 0.25f;
             }
         }
         
