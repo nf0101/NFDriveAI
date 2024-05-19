@@ -29,8 +29,8 @@ public class CapsuleCasting : MonoBehaviour
         // Calcola le posizioni degli estremi della capsula in base alla rotazione
         Vector2 leftEnd1 = transform.TransformPoint(new Vector2(capsuleWidth / y, x));
         Vector2 leftEnd2 = transform.TransformPoint(new Vector2(-capsuleWidth / y, x));
-        Vector2 rightEnd = transform.TransformPoint(new Vector2(2*capsuleHeight, capsuleHeight / 2f));
-        Vector2 leftDown = transform.TransformPoint(new Vector2(2*-capsuleHeight, capsuleHeight / 2f));
+        Vector2 rightEnd = transform.TransformPoint(new Vector2(capsuleWidth / y, x));
+        Vector2 leftDown = transform.TransformPoint(new Vector2(-capsuleWidth / y, x));
 
         Quaternion rightRotation = Quaternion.Euler(0, 0, -rotation);
         Quaternion leftRotation = Quaternion.Euler(0, 0, rotation);
@@ -58,14 +58,14 @@ public class CapsuleCasting : MonoBehaviour
         DrawRay(leftPrevisionR, rightRotation * transform.TransformDirection(Vector2.up), false, 2, maxRaycastDistance);
         DrawRay(leftPrevisionL, leftRotation * transform.TransformDirection(Vector2.up), false, 0, maxRaycastDistance); 
         
-        DrawRay(rightEnd, transform.TransformDirection(Vector2.right), true, 4, latDistance);
-        DrawRay(leftDown, transform.TransformDirection(Vector2.left), false, 4, latDistance);
+        DrawRay(rightEnd, Quaternion.Euler(0, 0, -20 * rotation) * transform.TransformDirection(Vector2.up), true, 4, maxRaycastDistance);
+        DrawRay(leftDown, Quaternion.Euler(0, 0, 20 * rotation) * transform.TransformDirection(Vector2.up), false, 4, maxRaycastDistance);
 
-        DrawRay(rightLatPrevisionR, rightRotation * transform.TransformDirection(Vector2.right), true, 5, latDistance);
-        DrawRay(rightLatPrevisionL, leftRotation * transform.TransformDirection(Vector2.right), true, 3, latDistance);
+        DrawRay(rightLatPrevisionR, Quaternion.Euler(0, 0, -20 * rotation) * rightRotation * transform.TransformDirection(Vector2.up), true, 5, maxRaycastDistance);
+        DrawRay(rightLatPrevisionL, Quaternion.Euler(0, 0, -20 * rotation) * leftRotation * transform.TransformDirection(Vector2.up), true, 3, maxRaycastDistance);
 
-        DrawRay(leftLatPrevisionL, leftRotation * transform.TransformDirection(Vector2.left), false, 3, latDistance);
-        DrawRay(leftLatPrevisionR, rightRotation * transform.TransformDirection(Vector2.left), false, 5, latDistance);
+        DrawRay(leftLatPrevisionL, Quaternion.Euler(0, 0, 20 * rotation) * leftRotation * transform.TransformDirection(Vector2.up), false, 3, maxRaycastDistance);
+        DrawRay(leftLatPrevisionR, Quaternion.Euler(0, 0, 20 * rotation) * rightRotation * transform.TransformDirection(Vector2.up), false, 5, maxRaycastDistance);
 
         rightText.text = $"Dist dx: {rightRayDistance}";
         leftText.text = $"Dist sx: {leftRayDistance}";

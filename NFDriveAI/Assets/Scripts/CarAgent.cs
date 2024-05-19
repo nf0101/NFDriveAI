@@ -8,30 +8,30 @@ using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Unity.Collections.AllocatorManager;
 
 public class CarAgent : MonoBehaviour
 {
-    private float[,,,,] qtable = new float[31, 31, 11, 11, 3];
+    private float[,,,,] qtable = new float[31, 31, 31, 31, 3];
     private float learningRate = 0.5f;
     private float discountFactor = 0.9f;
     private float explorationStart = 0.1f;
     private float explorationEnd = 0.01f;
-    private int finishLineReward = 1000;
     private int goodDrivingReward = 1;
     private int badDrivingPenalty = -1;
-    private int wallPenalty = -5;
+    private int wallPenalty = -10;
     private float decayRate = 0.05f;
     private CapsuleCasting raycastScript;
     private CarController carControllerScript;
     private float[] raycastDistances = new float[12];
     private float[] features = new float[3];
-    public TMP_Text actionToPerform, currentStateText, dxStateText, sxStateText;
+    public TMP_Text actionToPerform, currentStateText, dxStateText, sxStateText, rewardText;
     private bool collided = false;
     public int totalReward = 0;
-    private string filePath => Path.Combine(Application.dataPath + "\\Learning\\", "example.json");
+    private string filePath => Path.Combine(Application.dataPath + "\\Learning\\", "Pista1.json");
 
     private void Save()
     {
@@ -77,13 +77,6 @@ public class CarAgent : MonoBehaviour
         features[0] = raycastScript.rightRayDistance;
         features[1] = raycastScript.leftRayDistance;
         features[2] = carControllerScript.carSpeed;
-        print(totalReward);
-
-
-        //string concatenated = string.Join(";", raycastDistances.Select(x => (DiscretizeDistance(x)).ToString()).ToArray());
-        //print(GetStateIndex((DiscretizeDistance(raycastDistances[0]), DiscretizeDistance(raycastDistances[1]))));
-        //GetStateIndex((DiscretizeDistance(raycastDistances[0]), DiscretizeDistance(raycastDistances[1])));
-        
         
         FinishEpisode(1); 
 
@@ -97,9 +90,7 @@ public class CarAgent : MonoBehaviour
             Load();
         }
 
-        //print($"{DiscretizeDistance(raycastDistances[6], 0.25f)}, {DiscretizeDistance(raycastDistances[7], 0.25f)}");
-        //(int, int, int, int) testState = GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f), DiscretizeDistance(raycastDistances[6], 0.25f), DiscretizeDistance(raycastDistances[7], 0.25f)));
-        //print(DiscretizeDistance(raycastDistances[0], 0.75f));
+        rewardText.text = $"Reward: {totalReward}";
         
     }
 
@@ -151,7 +142,6 @@ public class CarAgent : MonoBehaviour
                     bestAction = action;
                 }
             }
-        //print(bestAction);
             return bestAction;
         //}
     }
@@ -180,21 +170,23 @@ public class CarAgent : MonoBehaviour
 
     public void FinishEpisode(int currentEpisode, bool train = true)
     {
-        (int, int, int, int) currentState = GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f), DiscretizeDistance(raycastDistances[6], 0.25f), DiscretizeDistance(raycastDistances[7], 0.25f)));
+        (int, int, int, int) currentState = GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f), DiscretizeDistance(raycastDistances[6], 0.75f), DiscretizeDistance(raycastDistances[7], 0.75f)));
         bool isDone = false;
         int episodeReward = 0;
         int episodeStep = 0;
         int reward = 0;
+        int differenceDistance = 0;
 
         if (!isDone)
         {
+            
             carControllerScript.Drive();
             int action = GetAction(currentState, currentEpisode);
-            //print(action);
             (int, int, int, int) nextState = currentState;
+            
             currentStateText.text = currentState.ToString();
-            dxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.25f), DiscretizeDistance(raycastDistances[10], 0.25f))).ToString();
-            sxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.25f), DiscretizeDistance(raycastDistances[11], 0.25f))).ToString();
+            dxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f))).ToString();
+            sxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f))).ToString();
             if (action == 0) //Non fare nulla
             {
                 nextState = currentState;//GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f), DiscretizeDistance(raycastDistances[6], 0.25f), DiscretizeDistance(raycastDistances[7], 0.25f)));
@@ -202,53 +194,66 @@ public class CarAgent : MonoBehaviour
                 
             }
 
-            if (action == 1) //Gira a destra
+            else if (action == 1) //Gira a destra
             {
-                nextState = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.25f), DiscretizeDistance(raycastDistances[10], 0.25f)));
+                nextState = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f)));
                 actionToPerform.text = "Right";
                 carControllerScript.SteerRight();
             }
 
             else if (action == 2) //Gira a sinistra
             {
-                nextState = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.25f), DiscretizeDistance(raycastDistances[11], 0.25f)));
+                nextState = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f)));
                 actionToPerform.text = "Left";
                 carControllerScript.SteerLeft();
             }
 
-            //print($"{currentState.Item2};{nextState.Item2}");
-            //print($"{nextState.Item1}, {currentState.Item1}) || ({nextState.Item2}, {currentState.Item2}) || ({nextState.Item3} < 3) || ({nextState.Item4} < 3)");
+            differenceDistance = maxDistance(nextState.Item3, nextState.Item4);
+
             if (collided)
             {
                 //print("Collisione");
                 reward = wallPenalty;
             }
             //TODO: rivedere sistema reward
-            else if ((nextState.Item1 < currentState.Item1) || (nextState.Item2 < currentState.Item2))
+            else if (((nextState.Item1 < currentState.Item1) && (nextState.Item2 < currentState.Item2)) || ((nextState.Item3 < differenceDistance - 1)) || (nextState.Item4 > differenceDistance + 1) || nextState.Item3 <= 5 || nextState.Item4 <= 5)
             {
                 reward = badDrivingPenalty;
-                print($"Bad state, {currentState.Item1}, {nextState.Item1}; {currentState.Item2}, {nextState.Item2}");
+                rewardText.color = Color.red;
+                //print($"Bad state, {currentState.Item1}, {nextState.Item1}; {currentState.Item2}, {nextState.Item2}");
             }
 
-            //else if ((nextState.Item3 < 5) || (nextState.Item4 < 5))
+            //else if (((nextState.Item1 < currentState.Item1) || (nextState.Item2 < currentState.Item2)) || (nextState.Item1 <= 10 || nextState.Item2 <= 10) || (nextState.Item3 < currentState.Item3 && nextState.Item3 < 9) || (nextState.Item4 < currentState.Item4 && nextState.Item4 < 9))
             //{
             //    reward = badDrivingPenalty;
+            //    rewardText.color = Color.red;
+            //    print($"Bad state, {currentState.Item1}, {nextState.Item1}; {currentState.Item2}, {nextState.Item2}");
             //}
 
-            else if ((nextState.Item1 >= currentState.Item1 && nextState.Item2 >= currentState.Item2 ) && (Math.Abs(nextState.Item3 - nextState.Item4) >= 0 && Math.Abs(nextState.Item3 - nextState.Item4) <= 4))
+            //else if (!collided && (((nextState.Item1 > currentState.Item1 && nextState.Item2 > currentState.Item2) || (nextState.Item1 >= 26 && nextState.Item2 >= 26)) && (((nextState.Item3 >= currentState.Item3 && nextState.Item4 >= currentState.Item4) || (nextState.Item3 >= 11 && nextState.Item4 >= 11))
+            //    && Math.Abs(nextState.Item3 - nextState.Item4) >= 0 && Math.Abs(nextState.Item3 - nextState.Item4) <= 12)) && (nextState.Item3 >= 8 && nextState.Item4 >= 8 && nextState.Item1 > 8 && nextState.Item2 > 8))
+            ////    && nextState.Item3 >= currentState.Item3 && nextState.Item4 >= currentState.Item4))
+
+            //{
+            //    reward = goodDrivingReward;
+            //    rewardText.color = Color.green;
+            //}
+
+            else if (!collided && ((nextState.Item1 >= currentState.Item1 && nextState.Item2 >= currentState.Item2) || (nextState.Item1 > 15 && nextState.Item1 > 15 )) && (nextState.Item3 >= differenceDistance-1 && nextState.Item4 <= differenceDistance+1 && nextState.Item3 > 6 && nextState.Item4 > 6))
+               // && nextState.Item3 >= currentState.Item3 && nextState.Item4 >= currentState.Item4)))
+                //&& Math.Abs(nextState.Item3 - nextState.Item4) >= 0 && Math.Abs(nextState.Item3 - nextState.Item4) <= 8)
             {
                 reward = goodDrivingReward;
+                rewardText.color = Color.green;
             }
 
-            //else if (true)
-            //{
+            else
+            {
+                rewardText.color = Color.white;
+            }
 
-            //}
-
-            //print(reward);
             episodeReward += reward;
             totalReward += reward;
-           //print(nextState.Item3 < currentState.Item3 || (nextState.Item3 < currentState.Item3));
 
             if (train)
             {
@@ -275,6 +280,14 @@ public class CarAgent : MonoBehaviour
         {
             collided = false;
         }
+    }
+
+    private int maxDistance(int right, int left)
+    {
+        int maxDistance = 0;
+        maxDistance = (Math.Max(right, left) - Math.Min(right, left)) / 2 + Math.Min(right, left);
+
+        return maxDistance;
     }
 
 }
