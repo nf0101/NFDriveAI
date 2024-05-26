@@ -377,10 +377,15 @@
 -analyzer:"D:/Unity/Hub/Editor/2022.3.2f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/CameraController.cs"
 "Assets/Scripts/CarAgent.cs"
+"Assets/Scripts/CarAgent1.cs"
+"Assets/Scripts/CarAgent2.cs"
+"Assets/Scripts/CarAgent3.cs"
 "Assets/Scripts/CarController.cs"
+"Assets/Scripts/EventManager.cs"
 "Assets/Scripts/OldCarAgent.cs"
 "Assets/Scripts/RayCasting.cs"
 "Assets/Scripts/test.cs"
+"Assets/Scripts/Timer.cs"
 -langversion:9.0
 
 /deterministic
