@@ -79,7 +79,7 @@ public class CarAgent2 : MonoBehaviour
         features[1] = raycastScript.leftRayDistance;
         features[2] = carControllerScript.carSpeed;
 
-        FinishEpisode(1);
+        FinishEpisode(1, train: false);
 
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -245,8 +245,9 @@ public class CarAgent2 : MonoBehaviour
             if (train)
             {
                 UpdateQTable(currentState, action, reward, nextState);
-                currentState = nextState;
+                
             }
+            currentState = nextState;
         }
     }
 

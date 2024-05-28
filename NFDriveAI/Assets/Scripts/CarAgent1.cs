@@ -249,8 +249,9 @@ public class CarAgent1 : MonoBehaviour
             if (train)
             {
                 UpdateQTable(currentState, action, reward, nextState);
-                currentState = nextState;
+                
             }
+            currentState = nextState;
         }
     }
 
