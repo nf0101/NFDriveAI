@@ -34,7 +34,8 @@ public class CarAgent : MonoBehaviour
     public string FilePath = "Learning\\Agent0\\Agent0_0.json";
     public TMP_Text timerText;
     private Timer timerScript;
-    public double collisionsPerHour, collisionsPerMinute;
+    public double collisionsPerHour, collisionsPerMinute, collisionPerLap;
+    public int laps = 0;
 
     private void Save()
     {
@@ -99,6 +100,8 @@ public class CarAgent : MonoBehaviour
             collisionsPerHour = collisions / timerScript.hoursElapsed;
             collisionsPerMinute = collisions / timerScript.hoursElapsed / 60;
         }
+            
+        
         
         //rewardText.text = $"Reward: {totalReward}";
 
@@ -297,5 +300,17 @@ public class CarAgent : MonoBehaviour
 
         return maxDistance;
     }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        print("Trigger");
+        if (other.gameObject.tag.Equals("LapCounter"))
+        {
+            laps++;
+            collisionPerLap = (double)collisions / laps;
+        }
+    }
+
+
 
 }
