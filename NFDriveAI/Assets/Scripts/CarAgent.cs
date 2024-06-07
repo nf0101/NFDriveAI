@@ -32,6 +32,9 @@ public class CarAgent : MonoBehaviour
     private bool collided = false;
     public int totalReward = 0, collisions = 0;
     public string FilePath = "Learning\\Agent0\\Agent0_0.json";
+    public TMP_Text timerText;
+    private Timer timerScript;
+    public double collisionsPerHour, collisionsPerMinute;
 
     private void Save()
     {
@@ -58,6 +61,7 @@ public class CarAgent : MonoBehaviour
         //Load();
         raycastScript = gameObject.GetComponent<CapsuleCasting>();
         carControllerScript = gameObject.GetComponent<CarController>();
+        timerScript = timerText.GetComponent<Timer>();
     }
 
     // Update is called once per frame
@@ -90,9 +94,14 @@ public class CarAgent : MonoBehaviour
         {
             Load();
         }
-
-        //rewardText.text = $"Reward: {totalReward}";
+        if (timerScript.hoursElapsed > 0)
+        {
+            collisionsPerHour = collisions / timerScript.hoursElapsed;
+            collisionsPerMinute = collisions / timerScript.hoursElapsed / 60;
+        }
         
+        //rewardText.text = $"Reward: {totalReward}";
+
     }
 
     (int, int, int, int) GetStateIndex((float, float, float, float) distances)

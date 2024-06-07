@@ -11,7 +11,7 @@ public class Timer : MonoBehaviour
     [SerializeField] private TimerType timerType;
 
     [SerializeField] private float timeToDisplay = 60.0f;
-
+    public double hoursElapsed = 0;
     private bool _isRunning;
 
     #endregion
@@ -49,5 +49,6 @@ public class Timer : MonoBehaviour
 
         TimeSpan timeSpan = TimeSpan.FromSeconds(timeToDisplay);
         _timerText.text = timeSpan.ToString(@"hh\:mm\:ss\:ff");
+        hoursElapsed = timeSpan.TotalHours;
     }
 }
