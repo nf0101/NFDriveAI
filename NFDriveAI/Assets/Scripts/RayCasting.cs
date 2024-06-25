@@ -15,7 +15,7 @@ public class CapsuleCasting : MonoBehaviour
     public float y = 0.7f;
     bool collided = false;
     public float rightRayDistance, leftRayDistance, rightLatDistance, leftLatDistance;
-    public TMP_Text rightText, leftText, prevRight_Right, prevRight_Left, prevLeft_Right, prevLeft_Left, rightLatText, leftLatText, prevRightLat_Right, prevRightLat_Left, prevLeftLat_Right, prevLeftLat_Left;
+    //public TMP_Text rightText, leftText, prevRight_Right, prevRight_Left, prevLeft_Right, prevLeft_Left, rightLatText, leftLatText, prevRightLat_Right, prevRightLat_Left, prevLeftLat_Right, prevLeftLat_Left;
     public float prevRight_R, prevRight_L, prevLeft_R, prevLeft_L, prevLatLeft_R, prevLatLeft_L, prevLatRight_R, prevLatRight_L;
     float rotation = 2f;
 
@@ -67,21 +67,21 @@ public class CapsuleCasting : MonoBehaviour
         DrawRay(leftLatPrevisionL, Quaternion.Euler(0, 0, 20 * rotation) * leftRotation * transform.TransformDirection(Vector2.up), false, 3, maxRaycastDistance);
         DrawRay(leftLatPrevisionR, Quaternion.Euler(0, 0, 20 * rotation) * rightRotation * transform.TransformDirection(Vector2.up), false, 5, maxRaycastDistance);
 
-        rightText.text = $"Dist dx: {rightRayDistance}";
-        leftText.text = $"Dist sx: {leftRayDistance}";
+        //rightText.text = $"Dist dx: {rightRayDistance}";
+        //leftText.text = $"Dist sx: {leftRayDistance}";
 
-        rightLatText.text = $"Dist lat dx: {rightLatDistance}";
-        leftLatText.text = $"Dist lat sx: {leftLatDistance}";
+        //rightLatText.text = $"Dist lat dx: {rightLatDistance}";
+        //leftLatText.text = $"Dist lat sx: {leftLatDistance}";
 
-        prevRight_Right.text = $"Prev dxdx: {prevRight_R}";
-        prevRight_Left.text = $"Prev dxsx: {prevRight_L}";
-        prevLeft_Right.text = $"Prev sxdx: {prevLeft_R}";
-        prevLeft_Left.text = $"Prev sxdx: {prevLeft_L}";
+        //prevRight_Right.text = $"Prev dxdx: {prevRight_R}";
+        //prevRight_Left.text = $"Prev dxsx: {prevRight_L}";
+        //prevLeft_Right.text = $"Prev sxdx: {prevLeft_R}";
+        //prevLeft_Left.text = $"Prev sxdx: {prevLeft_L}";
 
-        prevRightLat_Right.text = $"Prev lat dxdx: {prevLatRight_R}";
-        prevRightLat_Left.text = $"Prev lat dxsx: {prevLatRight_L}";
-        prevLeftLat_Right.text = $"Prev lat sxdx: {prevLatLeft_R}";
-        prevLeftLat_Left.text = $"Prev lat sxsx: {prevLatLeft_L}";
+        //prevRightLat_Right.text = $"Prev lat dxdx: {prevLatRight_R}";
+        //prevRightLat_Left.text = $"Prev lat dxsx: {prevLatRight_L}";
+        //prevLeftLat_Right.text = $"Prev lat sxdx: {prevLatLeft_R}";
+        //prevLeftLat_Left.text = $"Prev lat sxsx: {prevLatLeft_L}";
 
     }
     //coordinate punto di inizio - distanza attuale - distanza successiva

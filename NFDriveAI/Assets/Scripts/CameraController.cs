@@ -45,7 +45,7 @@ public class CameraController : MonoBehaviour
         {
             cam2.GetComponent<Camera>().orthographicSize = 1;
         }
-        
+        //print((int)(1f / Time.unscaledDeltaTime));
     }
 
     private void OnApplicationQuit()

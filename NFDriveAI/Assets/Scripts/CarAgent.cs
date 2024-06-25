@@ -28,14 +28,14 @@ public class CarAgent : MonoBehaviour
     private CarController carControllerScript;
     private float[] raycastDistances = new float[12];
     private float[] features = new float[3];
-    //public TMP_Text actionToPerform, currentStateText, dxStateText, sxStateText, rewardText;
-    private bool collided = false;
+    public TMP_Text actionToPerform;//, currentStateText, dxStateText, sxStateText, rewardText;
+    private bool collided = false, isStreak = true;
     public int totalReward = 0, collisions = 0;
     public string FilePath = "Learning\\Agent0\\Agent0_0.json";
     public TMP_Text timerText;
     private Timer timerScript;
     public double collisionsPerHour, collisionsPerMinute, collisionPerLap;
-    public int laps = 0;
+    public int laps = 0, longestStreak = 0, streak = 0;
 
     private void Save()
     {
@@ -86,7 +86,7 @@ public class CarAgent : MonoBehaviour
         
         FinishEpisode(1); 
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             Save();
         }
@@ -100,9 +100,12 @@ public class CarAgent : MonoBehaviour
             collisionsPerHour = collisions / timerScript.hoursElapsed;
             collisionsPerMinute = collisions / timerScript.hoursElapsed / 60;
         }
-            
-        
-        
+
+
+        if (streak > longestStreak)
+        {
+            longestStreak = streak;
+        }
         //rewardText.text = $"Reward: {totalReward}";
 
     }
@@ -203,21 +206,21 @@ public class CarAgent : MonoBehaviour
             if (action == 0) //Non fare nulla
             {
                 nextState = currentState;//GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f), DiscretizeDistance(raycastDistances[6], 0.25f), DiscretizeDistance(raycastDistances[7], 0.25f)));
-                //actionToPerform.text = "Nothing";
+                actionToPerform.text = "Nothing";
                 
             }
 
             else if (action == 1) //Gira a destra
             {
                 nextState = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f)));
-                //actionToPerform.text = "Right";
+                actionToPerform.text = "Right";
                 carControllerScript.SteerRight();
             }
 
             else if (action == 2) //Gira a sinistra
             {
                 nextState = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f)));
-                //actionToPerform.text = "Left";
+                actionToPerform.text = "Left";
                 carControllerScript.SteerLeft();
             }
 
@@ -279,6 +282,7 @@ public class CarAgent : MonoBehaviour
         {
 
             collided = true;
+            
             //Save();
             //SceneManager.LoadScene(0);
         }
@@ -290,6 +294,7 @@ public class CarAgent : MonoBehaviour
         {
             collided = false;
             collisions++;
+            isStreak = false;
         }
     }
 
@@ -307,6 +312,16 @@ public class CarAgent : MonoBehaviour
         if (other.gameObject.tag.Equals("LapCounter"))
         {
             laps++;
+            if (isStreak)
+            {
+                streak++;
+            }
+            else
+            {
+                streak = 0;
+                isStreak = true;
+            }
+            
             collisionPerLap = (double)collisions / laps;
         }
     }
