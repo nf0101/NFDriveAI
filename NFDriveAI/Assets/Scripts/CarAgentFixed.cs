@@ -352,4 +352,19 @@ public class CarAgentFixed : MonoBehaviour
             
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag.Equals("DirectionController"))
+        {
+            Vector2 dir = collision.transform.position - transform.position;
+            print(dir);
+            print($"{dir.normalized.x}, {dir.normalized.y}, {dir.x}, {lapDirection}");
+            if ((dir.normalized.x < 0) != (lapDirection < 0))
+            {
+                transform.position = startPosition;
+                transform.rotation = startRotation;
+            }
+        }
+    }
 }

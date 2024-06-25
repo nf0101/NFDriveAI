@@ -3513,7 +3513,7 @@ EdgeCollider2D:
   m_GameObject: {fileID: 232264976}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: bcb4e5b704b5dbe41a7688527f1f95d3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -4697,7 +4697,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.42, y: 11.24, z: -10}
+  m_LocalPosition: {x: -0.6, y: 11.35, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6208,7 +6208,7 @@ EdgeCollider2D:
   m_GameObject: {fileID: 640066544}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: bcb4e5b704b5dbe41a7688527f1f95d3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -8331,10 +8331,10 @@ MonoBehaviour:
   actionToPerform: {fileID: 1122772679}
   currentStateText: {fileID: 1005391638}
   nextStateText: {fileID: 66796334}
-  training: 1
+  training: 0
   totalReward: 0
   collisions: 0
-  lapsToDo: 1000
+  lapsToDo: 5
   QTablePath: Learning\Agent0\AgentF_0_S075.json
   ResultsPath: Learning\Results\TrainingResultsTest.json
   timerText: {fileID: 851302728}
@@ -12076,14 +12076,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1594489380}
-  m_LocalRotation: {x: -0, y: -0, z: -0.71651447, w: 0.6975723}
-  m_LocalPosition: {x: -3.94, y: -5.44, z: 0.124172315}
+  m_LocalRotation: {x: -0, y: -0, z: -0.73362917, w: 0.67955005}
+  m_LocalPosition: {x: -4.03, y: -5.44, z: 0.124172315}
   m_LocalScale: {x: 0.19999999, y: 0.25, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105198897}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -811.53503}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -814.383}
 --- !u!114 &1594489382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12141,11 +12141,11 @@ MonoBehaviour:
   learningRateStart: 0.9
   learningRateEnd: 0.1
   discountFactor: 0.9
-  explorationStart: 0
+  explorationStart: 0.9
   actionToPerform: {fileID: 1122772679}
   currentStateText: {fileID: 571618837}
   nextStateText: {fileID: 543843132}
-  training: 1
+  training: 0
   totalReward: 0
   collisions: 0
   lapsToDo: 500
