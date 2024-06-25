@@ -8334,7 +8334,7 @@ MonoBehaviour:
   training: 1
   totalReward: 0
   collisions: 0
-  lapsToDo: 3
+  lapsToDo: 1000
   QTablePath: Learning\Agent0\AgentF_0_S075.json
   ResultsPath: Learning\Results\TrainingResultsTest.json
   timerText: {fileID: 851302728}
