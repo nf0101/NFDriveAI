@@ -38,5 +38,6 @@ Il funzionamento dei parametri è il seguente:</br>
 * Premendo il tasto <b>L</b> è possibile caricare la Q-Table specificata. Non è necessario farlo all'inizio se è stata spuntata la casella Trained.</br>
 * Premendo il tasto <b>2</b> è possibile inquadrare l'agente da una Camera secondaria. In questa modalità è possibile avvicinare o allontanare l'inquadratura con la rotella del mouse o con un trackpad.</br>
 * Premendo il tasto <b>1</b> è possibile tornare all'inquadratura originale.</br>
+
 Una volta configurato l'agente è possibile avviare la simulazione premendo il tasto Play.
 
