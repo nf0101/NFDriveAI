@@ -14,16 +14,21 @@ public class CarAgentFixed : MonoBehaviour
     public float learningRateEnd = 0.1f;
     public float discountFactor = 0.9f;
     public float explorationStart = 1f;
-    private float explorationEnd = 0.01f;
-    private int goodDrivingReward = 1, badDrivingPenalty = -1, wallPenalty = -10;
+    private float expRate, learnRate;
+    public float explorationEnd = 0.01f;
+    private int goodDrivingReward = 1, badDrivingPenalty = -1, wallPenalty = -10, badStatePenalty = -50;
     private CapsuleCastingFixed raycastScript;
     private CarControllerFixed carControllerScript;
     private float[] raycastDistances = new float[12];
     public TMP_Text actionToPerform, currentStateText, nextStateText;// dxStateText, sxStateText, rewardTextt;
-    private bool collided = false, isStreak = true, canLap = true;
-    public bool training = true;
+    private bool collided = false, isStreak = true, badState = false;
+    private static bool canLap = true;
+    private int triggerCounter = 0;
+    public bool training = true, trained = false;
     public int totalReward = 0, collisions = 0, lapsToDo = 500;
     public string QTablePath = "Learning\\Agent0\\AgentF_0_S075.json", ResultsPath = "Learning\\Results\\TrainingResults.json";
+    public string mediaCollisioniPath = "Learning\\Results\\MediaCollisioni.json";
+    public string collisioniGiroPath = "Learning\\Results\\CollisioniGiro.json";
     public TMP_Text timerText;
     private Timer timerScript;
     public double collisionsPerHour, collisionsPerMinute, collisionPerLap;
@@ -32,6 +37,9 @@ public class CarAgentFixed : MonoBehaviour
     private Quaternion startRotation;
     private Dictionary<int, int> results = new Dictionary<int, int>();
     private int lapCollisions = 0;
+    private float[] mediaCollisioni;
+    private int[] collisioniGiro;
+    private Rigidbody2D m_Rigidbody;
 
     private void Save()
     {
@@ -56,6 +64,12 @@ public class CarAgentFixed : MonoBehaviour
 
         File.WriteAllText($"{Application.dataPath}\\{ResultsPath}", json);
         print($"File saved at path: {Application.dataPath}\\{ResultsPath}");
+
+        json = JsonConvert.SerializeObject(mediaCollisioni);
+        File.WriteAllText($"{Application.dataPath}\\{mediaCollisioniPath}", json);
+
+        json = JsonConvert.SerializeObject(collisioniGiro);
+        File.WriteAllText($"{Application.dataPath}\\{collisioniGiroPath}", json);
     }
 
     // Start is called before the first frame update
@@ -64,8 +78,15 @@ public class CarAgentFixed : MonoBehaviour
         raycastScript = gameObject.GetComponent<CapsuleCastingFixed>();
         carControllerScript = gameObject.GetComponent<CarControllerFixed>();
         timerScript = timerText.GetComponent<Timer>();
+        m_Rigidbody = GetComponent<Rigidbody2D>();
         startPosition = transform.position;
         startRotation = transform.rotation;
+        mediaCollisioni = new float[lapsToDo];
+        collisioniGiro = new int[lapsToDo];
+        if (trained)
+        {
+            Load();
+        }
     }
 
     // Update is called once per frame
@@ -91,23 +112,15 @@ public class CarAgentFixed : MonoBehaviour
         else
         {
             carControllerScript.TurnOff();
-        }
-        
-        //rewardText.text = $"Reward: {totalReward}";
-
-                
+        }         
     }
     
     void Update()
     {
+        
         if (Input.GetKeyDown(KeyCode.O))
         {
             Save();
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Load();
         }
 
         if (Input.GetKeyDown(KeyCode.L))
@@ -151,37 +164,46 @@ public class CarAgentFixed : MonoBehaviour
 
     float GetExplorationRate(int currentEpisode)
     {
+        //print(currentEpisode);
+        //print($"{explorationEnd / explorationStart}, {(float)currentEpisode / lapsToDo}");
         //float explorationRate = explorationStart * Mathf.Pow((explorationEnd / explorationStart), currentEpisode * explorationDecayRate);
-        float explorationRate = explorationStart * Mathf.Pow((explorationEnd / explorationStart), currentEpisode / lapsToDo);
+        //float explorationRate = explorationStart * Mathf.Pow(explorationEnd / explorationStart, (float)currentEpisode / lapsToDo);
+        float explorationRate = Mathf.Lerp(explorationStart, explorationEnd, (float)currentEpisode / lapsToDo);
+
         return explorationRate;
     }
 
     int GetAction((int, int, int, int) state, int currentEpisode, bool training = true)
     {
-        float explorationRate;
-        explorationRate = GetExplorationRate(currentEpisode);
-
-
-        float maxQValue = float.MinValue;
-        int bestAction = 0;
-
         
-        if (!training || explorationRate < UnityEngine.Random.Range(0.1f, 1.1f))
+        float explorationRate;
+        if (trained && !training)
         {
-            for (int action = 0; action < qtable.GetLength(4); action++)
-            {
-
-                if (qtable[state.Item1, state.Item2, state.Item3, state.Item4, action] > maxQValue)
-                {
-                    maxQValue = qtable[state.Item1, state.Item2, state.Item3, state.Item4, action];
-                    bestAction = action;
-                }
-            }
-            return bestAction;
+            explorationRate = 0;
         }
         else
         {
+            explorationRate = GetExplorationRate(currentEpisode);            
+        }
+        expRate = explorationRate;
+        float maxQValue = float.MinValue;
+        int bestAction = 0;
+
+        if (UnityEngine.Random.Range(0.1f, 1.1f) < explorationRate)
+        {
             return UnityEngine.Random.Range(0, 3);
+        }
+        else
+        {
+            for (int action = 0; action < qtable.GetLength(4); action++)
+        {
+            if (qtable[state.Item1, state.Item2, state.Item3, state.Item4, action] > maxQValue)
+            {
+                maxQValue = qtable[state.Item1, state.Item2, state.Item3, state.Item4, action];
+                bestAction = action;
+            }
+        }
+        return bestAction;
         }
     }
 
@@ -203,84 +225,92 @@ public class CarAgentFixed : MonoBehaviour
     {
         float maxNextQValue = GetMaxQValue(nextState);
         float currentQValue = qtable[state.Item1, state.Item2, state.Item3, state.Item4, action];
-        float learningRate = learningRateStart * Mathf.Pow((learningRateEnd / learningRateStart), lap / lapsToDo);
-        float newQValue = currentQValue + Math.Max(0.01f, learningRate) * (reward + discountFactor * maxNextQValue - currentQValue);
+        //float learningRate = learningRateStart * Mathf.Pow(learningRateEnd / learningRateStart, (float)lap / lapsToDo);
+        float learningRate = Mathf.Lerp(explorationStart, explorationEnd, (float)lap / lapsToDo);
+        learnRate = learningRate;
+        float newQValue = currentQValue + learningRate * (reward + discountFactor * maxNextQValue - currentQValue);
         qtable[state.Item1, state.Item2, state.Item3, state.Item4, action] = newQValue;
     }
 
     public void AgentLoop(int lapsToDo, bool train = true)
     {
-        (int, int, int, int) currentState = GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f), 
-            DiscretizeDistance(raycastDistances[6], 0.75f), DiscretizeDistance(raycastDistances[7], 0.75f)));
-        bool isDone = false;
+        (int, int, int, int) currentState = GetStateIndex((DiscretizeDistance(raycastDistances[0], 0.75f), DiscretizeDistance(raycastDistances[1], 0.75f),
+            DiscretizeDistance(raycastDistances[6], 0.75f), DiscretizeDistance(raycastDistances[7], 0.75f)));;
 
         int reward = 0;
         int differenceDistance;
-        int lapCollisions = 0;
+        
+        int action = GetAction(currentState, laps+1, train);
+        (int, int, int, int) nextState = currentState;
 
-            int action = GetAction(currentState, laps+1, train);
-            (int, int, int, int) nextState = currentState;
-
-            currentStateText.text = currentState.ToString();
-            //dxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f))).ToString();
-            //sxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f))).ToString();
+        currentStateText.text = currentState.ToString();
+        //dxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f))).ToString();
+        //sxStateText.text = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f))).ToString();
             
-            if (action == 0) //Non fare nulla
-            {
-                nextState = currentState;
-                actionToPerform.text = "Nothing";
+        if (action == 0) //Non fare nulla
+        {
+            nextState = currentState;
+            actionToPerform.text = "Nothing";
 
-            }
+        }
 
-            else if (action == 1) //Gira a destra
-            {
-                nextState = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), 
-                    DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f)));
-                actionToPerform.text = "Right";
-                carControllerScript.SteerRight();
-            }
+        else if (action == 1) //Gira a destra
+        {
+            nextState = GetStateIndex((DiscretizeDistance(raycastDistances[2], 0.75f), DiscretizeDistance(raycastDistances[4], 0.75f), 
+                DiscretizeDistance(raycastDistances[8], 0.75f), DiscretizeDistance(raycastDistances[10], 0.75f)));
+            actionToPerform.text = "Right";
+            carControllerScript.SteerRight();
+        }
 
-            else if (action == 2) //Gira a sinistra
-            {
-                nextState = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), 
-                    DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f)));
-                actionToPerform.text = "Left";
-                carControllerScript.SteerLeft();
-            }
+        else if (action == 2) //Gira a sinistra
+        {
+            nextState = GetStateIndex((DiscretizeDistance(raycastDistances[3], 0.75f), DiscretizeDistance(raycastDistances[5], 0.75f), 
+                DiscretizeDistance(raycastDistances[9], 0.75f), DiscretizeDistance(raycastDistances[11], 0.75f)));
+            actionToPerform.text = "Left";
+            carControllerScript.SteerLeft();
+        }
 
-            nextStateText.text = nextState.ToString();
-            differenceDistance = maxDistance(nextState.Item3, nextState.Item4);
+        nextStateText.text = nextState.ToString();
+        differenceDistance = maxDistance(nextState.Item3, nextState.Item4);
 
-            if (collided)
-            {
-                //print("Collisione");
-                reward = wallPenalty;
-            }
+        if (badState)
+        {
+            reward = badStatePenalty;
+            badState = false;
+            print("Bad state");
+        }
+
+        else if (collided)
+        {
+            //print("Collisione");
+            reward = wallPenalty;
+            collided = false;
+        }
             
-            else if (((nextState.Item1 < currentState.Item1) && (nextState.Item2 < currentState.Item2)) || (nextState.Item3 < differenceDistance - 1) || 
-                (nextState.Item3 > differenceDistance + 1) || (nextState.Item4 < differenceDistance - 1) ||
-                (nextState.Item4 > differenceDistance + 1) || nextState.Item3 <= 7 || nextState.Item4 <= 7)
-            {
-                reward = badDrivingPenalty;
-            }
+        else if (((nextState.Item1 < currentState.Item1) && (nextState.Item2 < currentState.Item2)) || (nextState.Item3 < differenceDistance - 1) || 
+            (nextState.Item3 > differenceDistance + 1) || (nextState.Item4 < differenceDistance - 1) ||
+            (nextState.Item4 > differenceDistance + 1) || nextState.Item3 <= 7 || nextState.Item4 <= 7)
+        {
+            reward = badDrivingPenalty;
+        }
 
-            else if (!collided && ((nextState.Item1 >= currentState.Item1 && nextState.Item2 >= currentState.Item2) || 
-                (nextState.Item1 > 15 && nextState.Item1 > 15)) && 
-                (nextState.Item3 >= differenceDistance - 1 && nextState.Item3 <= differenceDistance + 1 &&
-                nextState.Item4 >= differenceDistance - 1 && nextState.Item4 <= differenceDistance + 1 && nextState.Item3 > 8 && nextState.Item4 > 8))
-            {
-                reward = goodDrivingReward;
-            }
+        else if (!collided && ((nextState.Item1 >= currentState.Item1 && nextState.Item2 >= currentState.Item2) || 
+            (nextState.Item1 > 15 && nextState.Item1 > 15)) && 
+            (nextState.Item3 >= differenceDistance - 1 && nextState.Item3 <= differenceDistance + 1 &&
+            nextState.Item4 >= differenceDistance - 1 && nextState.Item4 <= differenceDistance + 1 && nextState.Item3 > 8 && nextState.Item4 > 8))
+        {
+            reward = goodDrivingReward;
+        }
 
-            totalReward += reward;
+        totalReward += reward;
 
-            if (train)
-            {
-                UpdateQTable(currentState, action, reward, nextState, laps);
-            }
+        if (train)
+        {
+            UpdateQTable(currentState, action, reward, nextState, laps);
+        }
 
             
-            currentState = nextState;
+        currentState = nextState;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -288,6 +318,15 @@ public class CarAgentFixed : MonoBehaviour
         if (collision.gameObject.tag.Equals("Bound"))
         {
             collided = true;
+            collisions++;
+            lapCollisions++;
+            isStreak = false;
+            if (m_Rigidbody.velocity == Vector2.zero)
+            {
+                badState = true;
+                transform.position = startPosition;
+                transform.rotation = startRotation;
+            }
         }
     }
 
@@ -296,10 +335,10 @@ public class CarAgentFixed : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("Bound"))
         {
-            collided = false;
-            collisions++;
-            lapCollisions++;
-            isStreak = false;
+            //collided = false;
+            //collisions++;
+            //lapCollisions++;
+            //isStreak = false;
         }
     }
 
@@ -317,54 +356,51 @@ public class CarAgentFixed : MonoBehaviour
         {
             canLap = false;
             if (other.gameObject.tag.Equals("LapCounter"))
+                triggerCounter++;
             {
                 Vector2 dir = other.transform.position - transform.position;
-                print($"{ dir.normalized.x}, {lapDirection}");
                 if ((dir.normalized.x < 0) == (lapDirection < 0))
                 {
-                    print("Same direction");
-                    results.Add(laps+1, lapCollisions);
-                    laps++;
-                    lapCollisions = 0;
-                    if (isStreak)
+                    if(triggerCounter == 1)
                     {
-                        streak++;
-                        
-                        print($"Streak add {streak}");
-                    }
-                    else
-                    {
-                        streak = 0;
-                        isStreak = true;
-                    }
+                        results.Add(laps + 1, lapCollisions);
+                        laps++;
+                        lapCollisions = 0;
+                        print($"Lap: {timerText.text}");
+                        if (isStreak)
+                        {
+                            streak++;
 
-                    collisionPerLap = (double)collisions / laps;
+                            print($"Streak add {streak}");
+                        }
+                        else
+                        {
+                            streak = 0;
+                            isStreak = true;
+                        }
+
+                        collisionPerLap = (double)collisions / laps;
+                        mediaCollisioni[laps - 1] = (float)collisionPerLap;
+                        collisioniGiro[laps - 1] = collisions;
+                    }
+                    
 
                 }
                 else
                 {
                     print("Changed direction");
-                    lapDirection *= -1;
+                    //lapDirection *= -1;
+                    badState = true;
+                    collisions -= lapCollisions;
+                    lapCollisions = 0;
+                    transform.position = startPosition;
+                    transform.rotation = startRotation;
+                    
                 }
             }
-
+            triggerCounter = 0;
             canLap = true;
             
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag.Equals("DirectionController"))
-        {
-            Vector2 dir = collision.transform.position - transform.position;
-            print(dir);
-            print($"{dir.normalized.x}, {dir.normalized.y}, {dir.x}, {lapDirection}");
-            if ((dir.normalized.x < 0) != (lapDirection < 0))
-            {
-                transform.position = startPosition;
-                transform.rotation = startRotation;
-            }
         }
     }
 }
