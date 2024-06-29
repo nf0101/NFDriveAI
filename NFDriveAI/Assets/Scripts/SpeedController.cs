@@ -23,7 +23,7 @@ public class SpeedController : MonoBehaviour
     {
         if (!speed)
         {
-            Time.timeScale = 50;
+            Time.timeScale = 100;
             speed = true;
         }
         else
