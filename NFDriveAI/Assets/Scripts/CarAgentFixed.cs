@@ -1,11 +1,9 @@
 
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 public class CarAgentFixed : MonoBehaviour
 {
@@ -16,11 +14,11 @@ public class CarAgentFixed : MonoBehaviour
     public float explorationStart = 1f;
     private float expRate, learnRate;
     public float explorationEnd = 0.01f;
-    private int goodDrivingReward = 1, badDrivingPenalty = -1, wallPenalty = -10, badStatePenalty = -50;
+    public int goodDrivingReward = 1, badDrivingPenalty = -1, wallPenalty = -10, badStatePenalty = -50;
     private CapsuleCastingFixed raycastScript;
     private CarControllerFixed carControllerScript;
     private float[] raycastDistances = new float[12];
-    public TMP_Text actionToPerform, currentStateText, nextStateText;// dxStateText, sxStateText, rewardTextt;
+    public TMP_Text actionToPerform, currentStateText, nextStateText;// dxStateText, sxStateText;
     private bool collided = false, isStreak = true, badState = false;
     private static bool canLap = true;
     private int triggerCounter = 0;
@@ -31,7 +29,7 @@ public class CarAgentFixed : MonoBehaviour
     public string collisioniGiroPath = "Learning\\Results\\CollisioniGiro.json";
     public TMP_Text timerText;
     private Timer timerScript;
-    public double collisionsPerHour, collisionsPerMinute, collisionPerLap;
+    public double collisionPerLap;
     public int laps = 0, longestStreak = 0, streak = 0, lapDirection = 1;
     private Vector2 startPosition;
     private Quaternion startRotation;
@@ -116,8 +114,7 @@ public class CarAgentFixed : MonoBehaviour
     }
     
     void Update()
-    {
-        
+    {  
         if (Input.GetKeyDown(KeyCode.O))
         {
             Save();
@@ -127,13 +124,6 @@ public class CarAgentFixed : MonoBehaviour
         {
             Load();
         }
-
-        if (timerScript.hoursElapsed > 0)
-        {
-            collisionsPerHour = collisions / timerScript.hoursElapsed;
-            collisionsPerMinute = collisions / timerScript.hoursElapsed / 60;
-        }
-
 
         if (streak > longestStreak)
         {
@@ -164,12 +154,7 @@ public class CarAgentFixed : MonoBehaviour
 
     float GetExplorationRate(int currentEpisode)
     {
-        //print(currentEpisode);
-        //print($"{explorationEnd / explorationStart}, {(float)currentEpisode / lapsToDo}");
-        //float explorationRate = explorationStart * Mathf.Pow((explorationEnd / explorationStart), currentEpisode * explorationDecayRate);
-        //float explorationRate = explorationStart * Mathf.Pow(explorationEnd / explorationStart, (float)currentEpisode / lapsToDo);
         float explorationRate = Mathf.Lerp(explorationStart, explorationEnd, (float)currentEpisode / lapsToDo);
-
         return explorationRate;
     }
 
@@ -181,10 +166,15 @@ public class CarAgentFixed : MonoBehaviour
         {
             explorationRate = 0;
         }
+        else if (!trained && !training)
+        {
+            explorationRate = explorationStart;
+        }
         else
         {
             explorationRate = GetExplorationRate(currentEpisode);            
         }
+
         expRate = explorationRate;
         float maxQValue = float.MinValue;
         int bestAction = 0;
@@ -203,6 +193,7 @@ public class CarAgentFixed : MonoBehaviour
                 bestAction = action;
             }
         }
+
         return bestAction;
         }
     }
@@ -225,7 +216,6 @@ public class CarAgentFixed : MonoBehaviour
     {
         float maxNextQValue = GetMaxQValue(nextState);
         float currentQValue = qtable[state.Item1, state.Item2, state.Item3, state.Item4, action];
-        //float learningRate = learningRateStart * Mathf.Pow(learningRateEnd / learningRateStart, (float)lap / lapsToDo);
         float learningRate = Mathf.Lerp(explorationStart, explorationEnd, (float)lap / lapsToDo);
         learnRate = learningRate;
         float newQValue = currentQValue + learningRate * (reward + discountFactor * maxNextQValue - currentQValue);
@@ -330,21 +320,9 @@ public class CarAgentFixed : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
-
-    {
-        if (collision.gameObject.tag.Equals("Bound"))
-        {
-            //collided = false;
-            //collisions++;
-            //lapCollisions++;
-            //isStreak = false;
-        }
-    }
-
     private int maxDistance(int right, int left)
     {
-        int maxDistance = 0;
+        int maxDistance;
         maxDistance = (Math.Max(right, left) - Math.Min(right, left)) / 2 + Math.Min(right, left);
 
         return maxDistance;
@@ -366,11 +344,10 @@ public class CarAgentFixed : MonoBehaviour
                         results.Add(laps + 1, lapCollisions);
                         laps++;
                         lapCollisions = 0;
-                        print($"Lap: {timerText.text}");
+                        //print($"Lap: {timerText.text}");
                         if (isStreak)
                         {
                             streak++;
-
                             print($"Streak add {streak}");
                         }
                         else
@@ -383,24 +360,20 @@ public class CarAgentFixed : MonoBehaviour
                         mediaCollisioni[laps - 1] = (float)collisionPerLap;
                         collisioniGiro[laps - 1] = collisions;
                     }
-                    
-
                 }
                 else
                 {
                     print("Changed direction");
-                    //lapDirection *= -1;
                     badState = true;
                     collisions -= lapCollisions;
                     lapCollisions = 0;
                     transform.position = startPosition;
                     transform.rotation = startRotation;
-                    
                 }
             }
+
             triggerCounter = 0;
-            canLap = true;
-            
+            canLap = true; 
         }
     }
 }

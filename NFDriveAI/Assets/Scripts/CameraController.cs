@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class CameraController : MonoBehaviour
 {
@@ -11,6 +8,7 @@ public class CameraController : MonoBehaviour
     public TMP_Text timer;
     public float x, y;
     private float zoom = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +19,6 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //timer.text = EventManager.
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             cam1.SetActive(true);
@@ -45,7 +42,6 @@ public class CameraController : MonoBehaviour
         {
             cam2.GetComponent<Camera>().orthographicSize = 1;
         }
-        //print((int)(1f / Time.unscaledDeltaTime));
     }
 
     private void OnApplicationQuit()

@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class CapsuleCastingFixed : MonoBehaviour
 {
@@ -21,8 +16,8 @@ public class CapsuleCastingFixed : MonoBehaviour
 
     private void Start()
     {
-
     }
+
     void FixedUpdate()
     {
         //print(capsuleHeight + x);
@@ -84,7 +79,7 @@ public class CapsuleCastingFixed : MonoBehaviour
         prevLeftLat_Left.text = $"Prev lat sxsx: {prevLatLeft_L}";
 
     }
-    //coordinate punto di inizio - distanza attuale - distanza successiva
+
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.tag.Equals("Bound"))
@@ -118,6 +113,7 @@ public class CapsuleCastingFixed : MonoBehaviour
             {
                 color = Color.blue;
             }
+
             Debug.DrawLine(start, hit.point, color);
             if (rayPosition == 1)
             {
@@ -269,7 +265,6 @@ public class CapsuleCastingFixed : MonoBehaviour
                     prevLatLeft_R = float.NaN;
                 }
             }
-        }
-        
+        } 
     }
 }
