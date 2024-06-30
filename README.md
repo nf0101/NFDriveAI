@@ -27,8 +27,8 @@ Di default, quando il package viene importato, si avrà la terza pista, con tutt
 Per utilizzare le altre piste basta attivarle dalla Hierarchy e riposizionare la Main Camera e se necessario l'agente.</br>
 Nell'inspector sarà possibile modificare i parametri degli agenti.</br>
 Il funzionamento dei parametri è il seguente:</br>
-* Se viene spuntata la casella <b>Training</b>, l'agente aggiornerà la q-table durante la simulazione.</br>
-* Se viene spuntata la casella <b>Trained</b> l'agente caricherà la q-table presente nel path denominato Q-Table Path.</br>
+* Se viene spuntata la casella <b>Training</b>, l'agente aggiornerà la Q-Table durante la simulazione.</br>
+* Se viene spuntata la casella <b>Trained</b> l'agente caricherà la Q-Table presente nel path denominato Q-Table Path.</br>
 * Se Trained è spuntata ma Training no, l'agente avrà un exploration rate di 0 e seguirà solo la Q-Table. Questa modalità è utilizzata nel <b>testing</b> del modello addestrato.</br>
 * Se nessuna delle due è spuntata, l'agente avrà un exploration rate di 0.9 che non decadrà e non aggiornerà la tabella. Questa modalità è utilizzata nel <b>testing</b> del modello non addestrato.</br>
 * Se sono spuntate entrambe, si potranno affinare le conoscenze dell'agente.</br>
@@ -39,6 +39,33 @@ Il funzionamento dei parametri è il seguente:</br>
 * Premendo il tasto <b>L</b> è possibile caricare la Q-Table specificata. Non è necessario farlo all'inizio se è stata spuntata la casella Trained.</br>
 * Premendo il tasto <b>2</b> è possibile inquadrare l'agente da una Camera secondaria. In questa modalità è possibile avvicinare o allontanare l'inquadratura con la rotella del mouse o con un trackpad.</br>
 * Premendo il tasto <b>1</b> è possibile tornare all'inquadratura originale.</br>
+<b>N.B. il tasto O e il tasto Save Results sovrascrivono i dati al path specificato</b>
 
 Una volta configurato l'agente è possibile avviare la simulazione premendo il tasto Play.
 
+### Replicare il training della documentazione
+Per ottenere gli stessi risultati presenti nella documentazione:
+* Togliere la spunta alla casella <b>Trained</b>
+* Spuntare la casella <b>Training</b>
+* Inserire 5000 giri nel campo <b>Laps to do</b>
+* Avviare la simulazione
+* Premere il tasto <b>Speed</b> per velocizzare il processo
+* Attendere la fine dei giri e premere il tasto <b>Speed</b>
+* Premere il tasto <b>O</b>
+* Premere il tasto <b>Save Results<b></b> se si vogliono esportare i dati
+* Premere il tasto <b>Play</b> di Unity per fermare la simulazione
+
+A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici. Se non sono stati modificati i path nell'inspector di Unity, è possibile avviare lo script senza specificare i path.
+
+### Replicare il testing della documentazione
+Per testare l'agente dopo il training precedente:
+* Togliere la spunta alla casella <b>Training</b>
+* Spuntare la casella <b>Trained</b>
+* Inserire 50 giri nel campo <b>Laps to do</b>
+* Avviare la simulazione
+* Premere il tasto <b>Speed</b> se si vuole velocizzare il processo
+* Attendere la fine dei giri e premere il tasto <b>Speed</b> se necessario
+* Premere il tasto <b>Save Results<b></b> se si vogliono esportare i dati
+* Premere il tasto <b>Play</b> di Unity per fermare la simulazione
+
+A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici. Se non sono stati modificati i path nell'inspector di Unity, è possibile avviare lo script senza specificare i path.
