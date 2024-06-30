@@ -18,7 +18,7 @@ Per utilizzare il progetto seguire i seguenti passaggi:
 ### Requisiti:
 <b>Unity Edito</b>r, possibilmente versione <b>2022.3.2f1</b> per evitare incompatibilità.
 ### Installazione
-* Scaricare lo Unity Package
+* Scaricare lo Unity Package dalla sezione release
 * Creare un progetto 2D
 * Importare il package tramite <b>Asset > Import package > Custom package...</b> > Selezionare il package scaricato
 ### Utilizzare il progetto
