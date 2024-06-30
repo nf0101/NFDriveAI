@@ -1,4 +1,4 @@
-<p align="center"><img src="?raw=true" height="400"></p>
+<p align="center"><img src="https://github.com/[nf0101]/[NFDriveAI]/blob/main/Slide.png?raw=true" height="400"></p>
 
 # NFDriveAI
 
