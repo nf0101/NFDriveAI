@@ -29,7 +29,8 @@ Nell'inspector sarà possibile modificare i parametri degli agenti.</br>
 Il funzionamento dei parametri è il seguente:</br>
 * Se viene spuntata la casella <b>Training</b>, l'agente aggiornerà la q-table durante la simulazione.</br>
 * Se viene spuntata la casella <b>Trained</b> l'agente caricherà la q-table presente nel path denominato Q-Table Path.</br>
-* Se Trained è spuntata ma Training no, l'agente avrà un exploration rate di 0 e seguirà solo la Q-Table. Questa modalità è utilizzata nel <b>testing</b>.</br>
+* Se Trained è spuntata ma Training no, l'agente avrà un exploration rate di 0 e seguirà solo la Q-Table. Questa modalità è utilizzata nel <b>testing</b> del modello addestrato.</br>
+* Se nessuna delle due è spuntata, l'agente avrà un exploration rate di 0.9 che non decadrà e non aggiornerà la tabella. Questa modalità è utilizzata nel <b>testing</b> del modello non addestrato.</br>
 * Se sono spuntate entrambe, si potranno affinare le conoscenze dell'agente.</br>
 * Nella GUI sono presenti due pulsanti:</br>
 * <b>Speed</b>: aumenta il clock dell'engine di 100. Permette di addestrare più velocemente senza modificare il comportamento dell'agente.</br>
