@@ -10,8 +10,8 @@ NFDriveAI è un progetto in Unity che implementa un sistema di intelligenza arti
 
 <b>PlotData:</b> Script data visualization
 * Per utilizzarlo, salvare i risultati dell'agente come spiegato più avanti.
-* Se non vengono modificati i path di salvataggio, eseguire da CMD il comando <b>python main.py</b> nel folder PlotData. A questo punto verranno mostrati i grafici.
-* Se i path vengono modificati, bisogna aggiungere al comando <b>python main.py</b> tre argomenti, che saranno i path dei tre file JSON, nell'ordine: 
+* Eseguendo da CMD il comando <b>python main.py</b> nel folder PlotData senza inserire i parametri, verranno cercati i risultati nel folder della repository.
+* Se i path vengono modificati o se non viene scaricata l'intera repository, bisogna aggiungere al comando <b>python main.py</b> tre argomenti, che saranno i path dei tre file JSON, nell'ordine: collisioni per giro, media collisioni, collisioni totali. Es. <b>python main.py C:\Folder\CollisioniGiro.json C:\Folder\MediaCOllisioni.json C:\Folder\CollisioniTotali.json </b>
 
 ## Installazione e Utilizzo
 Per utilizzare il progetto seguire i seguenti passaggi:
@@ -62,7 +62,7 @@ Per ottenere gli stessi risultati presenti nella documentazione:
 * Premere il tasto <b>Save Results<b></b> se si vogliono esportare i dati
 * Premere il tasto <b>Play</b> di Unity per fermare la simulazione
 
-A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici. Se non sono stati modificati i path nell'inspector di Unity, è possibile avviare lo script senza specificare i path.
+A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici come specificato sopra
 
 ### Replicare il testing della documentazione
 Per testare l'agente dopo il training precedente:
@@ -75,4 +75,4 @@ Per testare l'agente dopo il training precedente:
 * Premere il tasto <b>Save Results<b></b> se si vogliono esportare i dati
 * Premere il tasto <b>Play</b> di Unity per fermare la simulazione
 
-A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici. Se non sono stati modificati i path nell'inspector di Unity, è possibile avviare lo script senza specificare i path.
+A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici come specificato sopra
