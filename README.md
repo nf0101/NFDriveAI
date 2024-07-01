@@ -76,3 +76,5 @@ Per testare l'agente dopo il training precedente:
 * Premere il tasto <b>Play</b> di Unity per fermare la simulazione
 
 A questo punto è possibile usare lo script in Python main.py per visualizzare i grafici come specificato sopra
+
+n.d.r. nel package è presente una pista aggiuntiva non documentata, non è da considerare.
