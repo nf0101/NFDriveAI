@@ -4864,7 +4864,7 @@ GameObject:
   - component: {fileID: 554206212}
   - component: {fileID: 554206211}
   m_Layer: 2
-  m_Name: Capsule (3)
+  m_Name: Car
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10828,7 +10828,7 @@ GameObject:
   - component: {fileID: 1600599754}
   - component: {fileID: 1600599753}
   m_Layer: 2
-  m_Name: Capsule (4)
+  m_Name: Car
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14128,7 +14128,7 @@ GameObject:
   - component: {fileID: 1921196990}
   - component: {fileID: 1921196989}
   m_Layer: 2
-  m_Name: Capsule (4)
+  m_Name: Car
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
