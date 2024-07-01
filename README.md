@@ -31,6 +31,7 @@ Il package caricherà anche le Settings del progetto in quanto sono state modifi
 ### Utilizzare il progetto
 Nel package scaricato saranno già presenti piste e agenti.</br>
 Di default, quando il package viene importato, si avrà la terza pista, con tutte le impostazioni per il testing e l'agente caricherà la Q-Table.</br>
+Assicurarsi che l'inspector sia in modalità <b>Normale</b> per effettuare modifiche alla mappa 
 Per utilizzare le altre piste basta attivarle dalla Hierarchy e riposizionare la Main Camera e se necessario l'agente.</br>
 Nell'inspector sarà possibile modificare i parametri degli agenti. I parametri rilevanti sono quelli dello script CarAgentFixed. Selezionare la Car dalla Hierarchy e nell'inspector scorrere fino allo script CarAgentFixed</br>.
 Il funzionamento dei parametri è il seguente:</br>
