@@ -20,12 +20,19 @@ Per utilizzare il progetto seguire i seguenti passaggi:
 ### Installazione
 * Scaricare lo Unity Package dalla sezione release
 * Creare un progetto 2D
-* Importare il package tramite <b>Asset > Import package > Custom package...</b> > Selezionare il package scaricato
+* Importare il package tramite <b>Asset > Import package > Custom package...</b> > Selezionare il package scaricato.
+* Accettare di importare il progetto e asscicurarsi di importare tutte le voci.
+* Se la console restituisce un errore per la libreria Newtonsoft.json, andare in <b>Window</b> > <b>Package Manager</b> > Premere <b>+</b> in alto a sinistra > <b>Add package from git URL...</b> > Inserire <b>com.unity.nuget.newtonsoft-json</b> > Premere <b>Add</b>.
+* Tramite la gestione dei folder del progetto, andare nella cartella <b>Assets</b> > <b>Scenes</b> > Cliccare due volte su <b>SampleScene</b>. Rifiutare di salvare la scena, altrimenti verrà sovrascritta la scena del progetto e dovrà essere reimportata.
+* Si consiglia di impostare la risoluzione FHD o maggiore nella modalità Play per una migliore qualità.
+* Si consiglia di disattivare le icone degli SpriteShape nella modalità Play, premendo sulla freccia della label Gizmos, in alto a destra, scorrendo fino alle icone viola degli SpriteShape e premendo sull'icona di SpriteShapeController. 
+
+Il package caricherà anche le Settings del progetto in quanto sono state modificate per far funzionare la fisica nel modo corretto. 
 ### Utilizzare il progetto
 Nel package scaricato saranno già presenti piste e agenti.</br>
 Di default, quando il package viene importato, si avrà la terza pista, con tutte le impostazioni per il testing e l'agente caricherà la Q-Table.</br>
 Per utilizzare le altre piste basta attivarle dalla Hierarchy e riposizionare la Main Camera e se necessario l'agente.</br>
-Nell'inspector sarà possibile modificare i parametri degli agenti.</br>
+Nell'inspector sarà possibile modificare i parametri degli agenti. I parametri rilevanti sono quelli dello script CarAgentFixed. Selezionare la Car dalla Hierarchy e nell'inspector scorrere fino allo script CarAgentFixed</br>.
 Il funzionamento dei parametri è il seguente:</br>
 * Se viene spuntata la casella <b>Training</b>, l'agente aggiornerà la Q-Table durante la simulazione.</br>
 * Se viene spuntata la casella <b>Trained</b> l'agente caricherà la Q-Table presente nel path denominato Q-Table Path.</br>
