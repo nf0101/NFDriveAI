@@ -21,7 +21,7 @@ Per utilizzare il progetto seguire i seguenti passaggi:
 * Scaricare lo Unity Package dalla sezione release
 * Creare un progetto 2D
 * Importare il package tramite <b>Asset > Import package > Custom package...</b> > Selezionare il package scaricato.
-* Accettare di importare il progetto e asscicurarsi di importare tutte le voci.
+* Accettare di importare il progetto e assicurarsi di importare tutte le voci.
 * Se la console restituisce un errore per la libreria Newtonsoft.json, andare in <b>Window</b> > <b>Package Manager</b> > Premere <b>+</b> in alto a sinistra > <b>Add package from git URL...</b> > Inserire <b>com.unity.nuget.newtonsoft-json</b> > Premere <b>Add</b>.
 * Tramite la gestione dei folder del progetto, andare nella cartella <b>Assets</b> > <b>Scenes</b> > Cliccare due volte su <b>SampleScene</b>. Rifiutare di salvare la scena, altrimenti verrà sovrascritta la scena del progetto e dovrà essere reimportata.
 * Si consiglia di impostare la risoluzione FHD o maggiore nella modalità Play per una migliore qualità.
@@ -41,7 +41,7 @@ Il funzionamento dei parametri è il seguente:</br>
 * Se nessuna delle due è spuntata, l'agente avrà un exploration rate di 0.9 che non decadrà e non aggiornerà la tabella. Questa modalità è utilizzata nel <b>testing</b> del modello non addestrato.</br>
 * Se sono spuntate entrambe, si potranno affinare le conoscenze dell'agente.</br>
 * Nella GUI sono presenti due pulsanti:</br>
-* <b>Speed</b>: aumenta il clock dell'engine di 100. Permette di addestrare più velocemente senza modificare il comportamento dell'agente.</br>
+* <b>Speed</b>: aumenta il clock dell'engine di 100 volte. Permette di addestrare più velocemente senza modificare il comportamento dell'agente.</br>
 * <b>Save results</b>: salverà i risultati delle collisioni in un file json, il path viene registrato nella console e può essere modificato alla voce Results Path dell'inspector.</br>
 * Premendo il tasto <b>O</b>, sarà possibile salvare la Q-Table, nel path specificato nell'apposita voce dell'inspector.</br>
 * Premendo il tasto <b>L</b> è possibile caricare la Q-Table specificata. Non è necessario farlo all'inizio se è stata spuntata la casella Trained.</br>
