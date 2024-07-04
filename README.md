@@ -4,7 +4,7 @@
 
 NFDriveAI è un progetto in Unity che implementa un sistema di intelligenza artificiale con apprendimento per rinforzo, utilizzando il Q-Learning. L'obiettivo è permettere all'agente di guidare un'automobile lungo diverse piste.
 
-## Organizzazione respository
+## Organizzazione repository
 <b>NFDriveAI:</b> Progetto Unity. Mantiene la tipica gerarchia dei file di Unity. </br>
 * Nel subfolder <b>Learning</b> sono presenti la Q-Table di un agente addestrato e gli ultimi risultati ottenuti. </br>
 
